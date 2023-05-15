@@ -1,5 +1,0 @@
-title: time_debugging_fed
-type: object
-properties:
-  id:
-    type: string

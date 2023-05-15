@@ -1,5 +1,0 @@
-title: federates_query
-type: array
-items:
-  type: string
-description: return a list of federates under an object

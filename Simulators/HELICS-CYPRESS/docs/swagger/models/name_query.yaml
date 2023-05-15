@@ -1,5 +1,0 @@
-title: name_query
-type: string
-x-tags:
-  - query response
-description: the name of the queried object

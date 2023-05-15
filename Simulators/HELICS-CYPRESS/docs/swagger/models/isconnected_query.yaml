@@ -1,5 +1,0 @@
-title: isconnected_query
-type: boolean
-x-tags:
-  - query response
-description: response to the isconnected query

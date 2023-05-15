@@ -1,5 +1,0 @@
-title: queries_query
-type: array
-items:
-  type: string
-description: list of available queries

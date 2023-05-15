@@ -1,5 +1,0 @@
-title: inputs_query
-type: array
-description: get a list of all a targets named inputs
-items:
-  type: string

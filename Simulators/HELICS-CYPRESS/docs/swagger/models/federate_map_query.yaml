@@ -1,5 +1,0 @@
-title: federate_map_query
-type: object
-properties:
-  id:
-    type: string

@@ -1,5 +1,0 @@
-# comment
-meeter == meter
- meh == meeter per hour
- # => indicates input only unit
-        mehmeh => meh/s

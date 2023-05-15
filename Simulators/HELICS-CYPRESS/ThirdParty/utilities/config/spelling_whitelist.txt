@@ -1,4 +1,0 @@
-ans
-stoll
-endwhile
-copyable

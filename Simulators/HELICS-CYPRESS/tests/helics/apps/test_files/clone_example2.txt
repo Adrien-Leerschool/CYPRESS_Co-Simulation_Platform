@@ -1,4 +1,0 @@
-#test for clone interface
-
-clone source d1
-clone source d2

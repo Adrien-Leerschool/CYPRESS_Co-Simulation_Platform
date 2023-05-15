@@ -1,5 +1,0 @@
-title: brokers_query
-type: array
-description: return a list of the children brokers for a target
-items:
-  type: string

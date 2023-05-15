@@ -1,2 +1,0 @@
-    [--tick <time(ms)>] [--disable_timer|--no_tick] [--timeout <time(ms)>]
-    [--networktimeout <time(ms)>]

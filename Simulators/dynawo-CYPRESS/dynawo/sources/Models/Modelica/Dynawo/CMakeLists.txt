@@ -1,0 +1,32 @@
+# Copyright (c) 2015-2019, RTE (http://www.rte-france.com)
+# See AUTHORS.txt
+# All rights reserved.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, you can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+#
+# This file is part of Dynawo, an hybrid C++/Modelica open source time domain simulation tool for power systems.
+
+set(MODEL_FILES
+  package.mo
+  package.order
+  Types.mo
+  )
+
+#
+# Modelica models install
+#
+foreach(MODEL_FILE ${MODEL_FILES})
+  install_model_file(${MODEL_FILE})
+endforeach(MODEL_FILE)
+
+get_filename_component(modelRoot ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Resources DESTINATION ${DDBDIR_NAME}/${modelRoot}/)
+
+add_subdirectory(Connectors C)
+add_subdirectory(Electrical E)
+add_subdirectory(NonElectrical N)
+add_subdirectory(AdditionalIcons I)
+add_subdirectory(Examples X)
+add_subdirectory(UsersGuide U)

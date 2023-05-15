@@ -1,0 +1,54 @@
+name: Generate SWIG Interfaces
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+      - helics2
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Generate C API Headers
+      run: |
+              python3 scripts/generateHelicsH.py src/helics/shared_api_library/backup/helics/ ./
+  
+    # Run SWIG to generate updated matlab + java interface files
+    - uses: gmlc-tdc/helics-action/update-swig-interfaces@main
+     
+    # Run pre-commit docker-clang-format hook
+    - uses: actions/setup-python@v2
+    - name: set PY
+      run: echo "PY=$(python --version --version | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
+    # Run clang-format on helics.h and helics_api.h
+    - name: clang-format
+      uses: pre-commit/action@v2.0.3
+      # Failure is expected, since we know it will be fixing up the generated helics header files
+      continue-on-error: true
+      with:
+        extra_args: clang-format --files src/helics/shared_api_library/backup/helics/helics.h src/helics/shared_api_library/backup/helics/helics_api.h
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        commit-message: Automated update to generated interface files
+        author: GitHub <noreply@github.com>
+        title: Automated update to generated interface files
+        body: Automated update to generated interface files from commit https://github.com/${{ github.repository }}/commit/${{ github.sha }}.
+        branch: interface-gen/update-${{ github.head_ref }}${{ github.ref_name }}
+        add-paths: |
+          interfaces/*
+          src/helics/shared_api_library/backup/*

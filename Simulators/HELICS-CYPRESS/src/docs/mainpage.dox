@@ -1,0 +1,24 @@
+/** @mainpage  HELICS
+\internal
+This should work, but it doesn't because Doxygen 1.8.17 has a bug with handling SVG images: https://github.com/doxygen/doxygen/issues/7672
+This is the exact version of Doxygen installed by RTD. TODO when RTD has a newer ubuntu version available, updated and use this again.
+
+\image html helics-logo-long-primary-black.svg
+\endinternal
+
+\htmlonly
+<div class="image">
+<img src="helics-logo-long-primary-black.svg" width="650px" />
+</div>
+\endhtmlonly
+
+\section intro Introduction
+Welcome to the C++ API reference docs for HELICS, for applications using the helicscpp c++17 shared library.
+
+HELICS provides a general-purpose, modular, highly-scalable co-simulation framework that runs cross-platform and has bindings for multiple languages. It is a library that enables multiple existing simulation tools (and/or instances of the same tool), known as "federates", to exchange data during runtime and stay synchronized in time such that together they act as one large simulation, or "federation". This enables bringing together simulation tools from multiple domains to form a complex software simulation without having to change the individual tools.
+
+\section related Informational Pages
+- <a href="https://github.com/GMLC-TDC/HELICS/blob/main/README.md">GitHub README</a>
+- <a href="https://github.com/GMLC-TDC/HELICS/blob/main/LICENSE">LICENSE</a>
+- <a href="https://github.com/GMLC-TDC/HELICS/blob/main/NOTICE">NOTICE</a>
+ */

@@ -1,0 +1,40 @@
+#this is a toml configuration file for HELICS value federate
+#example toml configuration file for a value federate all arguments are optional
+
+name="valueFed_toml" # the name of the federate
+
+coretype="test" #the type of the core "test","zmq","udp","ipc","tcp","mpi"
+corename="toml_testb"  #this matters most for ipc and test cores, can be empty
+coreinitstring="--autobroker" # the initialization string for the core in the form of a command line arguments
+period=  1.0 #the period with which federate may return time
+
+#subscriptions used in the federate (also example of inline table
+#set required to true to make helics issue a warning if the publication is not found
+#example of inline tables (be careful it falls under the most recent [section] or [[table]]
+subscriptions=[
+{key="pub1",  connection_required=true, default=9.33},
+  # shortcut is a naming shortcut for the publication for later retrieval
+{key="valueFed_toml/pub2", alias="pubshortcut", info="this is an information string for use by the application"}
+]
+
+inputs=[
+{key="ipt2",  type="double",flags="connection_optional", target="pub1",default="3.67", global=true,tags=[{name="period",value=0.7},{name="description",value="a test input"}]}
+]  #specify an input with a target
+
+#add some descriptive tags to a federate
+tags={description="fedb description", version=27}
+
+#Publications used in the federate
+[[publications]]
+key="pub1" # the name of the publication
+ type="double" # the type associated with a publication (optional)
+ unit="m"  # the units associated with a publication (optional)
+ global=true #set to true to make the key global (default is false in which case the publication is prepended with the federate name)
+ info="this is an information string for use by the application"
+ tags={period=0.5,description="a test publication"}
+
+[[publications]]
+key="pub2" # the name of the publication
+ type="double" # the type associated with a publication (optional)
+ alias="primary"
+ #no global=true implies this will have the federate name prepended like valueFed/pub2

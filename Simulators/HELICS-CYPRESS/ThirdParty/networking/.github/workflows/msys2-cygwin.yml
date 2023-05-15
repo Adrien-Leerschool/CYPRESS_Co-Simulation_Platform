@@ -1,0 +1,74 @@
+name: MSYS2 and Cygwin
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 09 * * *' # Run at in the early hours of the morning (UTC)
+  push:
+    branches:
+      - 'msys2/**'
+      - 'msys/**'
+      - 'msys2-**'
+      - 'msys-**'
+      - 'mingw64/**'
+      - 'mingw/**'
+      - 'mingw64-**'
+      - 'mingw-**'
+      - 'cygwin/**'
+      - 'cygwin-**'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-msys2:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - { msystem: MINGW64, env: x86_64, gen: "MinGW Makefiles" }
+          - { msystem: MINGW64, env: x86_64, gen: "MSYS Makefiles" }
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{matrix.msystem}}
+        install: >-
+          git
+          make
+          cmake
+          mingw-w64-${{matrix.env}}-toolchain
+          mingw-w64-${{matrix.env}}-cmake
+          mingw-w64-${{matrix.env}}-ninja
+
+    - name: CMake Configure
+      run: cmake -G Ninja -B build -S .
+
+    - name: Build
+      run: cmake --build build --parallel
+
+    - name: Run tests
+      run: ctest --test-dir build --output-on-failure
+
+  build-cygwin:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+    steps:
+    - uses: actions/checkout@v3
+    - uses: egor-tensin/setup-cygwin@v3
+      with:
+        platform: x86
+        packages: git make cmake gcc-g++ ninja
+   
+    - name: CMake Configure
+      run: cmake -G Ninja -B build -S '${{ github.workspace }}'
+
+    - name: Build
+      run: cmake --build build --parallel
+
+    - name: Run tests
+      run: ctest --test-dir build --output-on-failure

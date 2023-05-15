@@ -1,0 +1,27 @@
+name: Static Analyzers
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  cpplint:
+    runs-on: ubuntu-latest
+    container: helics/buildenv:cpplint
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run cpplint
+      run: cpplint --counting=detailed --recursive gmlc/utilities tests
+  cppcheck:
+    runs-on: ubuntu-latest
+    container: helics/buildenv:cppcheck2
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run cppcheck
+      run: cppcheck --enable=performance,portability --language=c++ --suppressions-list=config/cppcheck_suppressions.txt --error-exitcode=-4 -i gmlc/extra -i orig_code -i scripts -i config .

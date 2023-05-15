@@ -1,0 +1,248 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b2031e0..c050de6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,11 @@
+ cmake_minimum_required(VERSION 3.4.3 FATAL_ERROR)
+ 
++if(${CMAKE_VERSION} VERSION_GREATER "3.15.0")
++  if(POLICY CMP0091)
++    cmake_policy(SET CMP0091 NEW)
++  endif()
++endif()
++
+ project(adept)
+ 
+ include(CTest)
+diff --git a/benchmark/animate.cpp b/benchmark/animate.cpp
+index 1db48f8..37ec9b2 100644
+--- a/benchmark/animate.cpp
++++ b/benchmark/animate.cpp
+@@ -10,7 +10,12 @@
+ 
+ #include <string>
+ #include <iostream>
++#ifdef _MSC_VER
++#define NOMINMAX
++#include <windows.h>
++#else
+ #include <time.h>
++#endif
+ 
+ #include "advection_schemes.h"
+ 
+@@ -37,9 +42,11 @@ main(int argc, char** argv)
+   std::string line;
+   line.resize(NX);
+ 
++#ifndef _MSC_VER
+   timespec t;
+   t.tv_sec = 0;
+   t.tv_nsec = 20000000;
++#endif
+ 
+   for (int i = 0; i < NX; i++) q1[i] = (0.5+0.5*sin((i*2.0*pi)/(NX-1.5)))+0.0001;
+   for (int k = 0; k < cycles*NX/(nt*dt); k++) {
+@@ -74,7 +81,11 @@ main(int argc, char** argv)
+       std::cout << line << "\n";
+       std::cout.flush();
+     }
++#ifdef _MSC_VER
++	  Sleep(20);
++#else
+     nanosleep(&t, 0);
++#endif
+     //toon(nt, dt, q1, q2);
+     lax_wendroff(nt, dt, q1, q2);
+     double* tmp = q1;
+diff --git a/include/Timer.h b/include/Timer.h
+index 58ace85..19a70b5 100644
+--- a/include/Timer.h
++++ b/include/Timer.h
+@@ -12,6 +12,7 @@
+ #define Timer_H 1
+ 
+ #ifdef _WIN32
++#define NOMINMAX
+ #include <windows.h>
+ #include <time.h>
+ #else
+diff --git a/include/adept/Array.h b/include/adept/Array.h
+index a1f4ab7..8cbaf6f 100644
+--- a/include/adept/Array.h
++++ b/include/adept/Array.h
+@@ -71,27 +71,27 @@ namespace adept {
+ 
+     // This is "true" by default: row-major is the normal C/C++
+     // convention
+-    extern bool array_row_major_order;
++    extern ADEPT_EXPORT bool array_row_major_order;
+ 
+     // When arrays are sent to a stream the dimensions can be grouped
+     // with curly brackets
+     //    extern bool array_print_curly_brackets;
+ 
+     // Variables describing how arrays are written to a stream
+-    extern ArrayPrintStyle array_print_style;
+-    extern std::string vector_separator;
+-    extern std::string vector_print_before;
+-    extern std::string vector_print_after;
+-    extern std::string array_opening_bracket;
+-    extern std::string array_closing_bracket;
+-    extern std::string array_contiguous_separator;
+-    extern std::string array_non_contiguous_separator;
+-    extern std::string array_print_before;
+-    extern std::string array_print_after;
+-    extern std::string array_print_empty_before;
+-    extern std::string array_print_empty_after;
+-    extern bool array_print_indent;
+-    extern bool array_print_empty_rank;
++    extern ADEPT_EXPORT ArrayPrintStyle array_print_style;
++    extern ADEPT_EXPORT std::string vector_separator;
++    extern ADEPT_EXPORT std::string vector_print_before;
++    extern ADEPT_EXPORT std::string vector_print_after;
++    extern ADEPT_EXPORT std::string array_opening_bracket;
++    extern ADEPT_EXPORT std::string array_closing_bracket;
++    extern ADEPT_EXPORT std::string array_contiguous_separator;
++    extern ADEPT_EXPORT std::string array_non_contiguous_separator;
++    extern ADEPT_EXPORT std::string array_print_before;
++    extern ADEPT_EXPORT std::string array_print_after;
++    extern ADEPT_EXPORT std::string array_print_empty_before;
++    extern ADEPT_EXPORT std::string array_print_empty_after;
++    extern ADEPT_EXPORT bool array_print_indent;
++    extern ADEPT_EXPORT bool array_print_empty_rank;
+ 
+     // Forward declaration to enable Array::where()
+     //    template <class A, class B> class Where;
+@@ -381,7 +381,12 @@ namespace adept {
+       return *this;
+     }
+ 
+-    friend void swap(Array& l, Array& r) noexcept {
++#ifdef _MSC_VER
++    static
++#else
++    friend
++#endif
++    void swap(Array& l, Array& r) noexcept {
+ #ifdef ADEPT_VERBOSE_FUNCTIONS
+       std::cout << "  running swap(Array&,Array&)\n";
+ #endif
+@@ -391,7 +396,14 @@ namespace adept {
+       Storage<Type>* tmp_storage = l.storage_;
+       l.storage_ = r.storage_;
+       r.storage_ = tmp_storage;
++#ifdef _MSC_VER
++	    ExpressionSize<Rank>::
++#endif
+       swap(l.dimensions_, r.dimensions_);
++
++#ifdef _MSC_VER
++	  ExpressionSize<Rank>::
++#endif
+       swap(l.offset_, r.offset_);
+       static_cast<internal::GradientIndex<IsActive>&>(l).swap_value(static_cast<internal::GradientIndex<IsActive>&>(r));
+     }
+diff --git a/include/adept/ExpressionSize.h b/include/adept/ExpressionSize.h
+index 2d1238d..0761a79 100644
+--- a/include/adept/ExpressionSize.h
++++ b/include/adept/ExpressionSize.h
+@@ -153,7 +153,12 @@ namespace adept {
+     }
+ 
+ #ifdef ADEPT_MOVE_SEMANTICS
+-    friend void swap(ExpressionSize<Rank>& l, 
++#ifdef _MSC_VER
++    static
++#else
++    friend
++#endif
++    void swap(ExpressionSize<Rank>& l,
+ 		     ExpressionSize<Rank>& r) noexcept {
+       for (int i = 0; i < Rank; ++i) {
+ 	Index tmp = l.dim[i];
+diff --git a/include/adept/RangeIndex.h b/include/adept/RangeIndex.h
+index 252322f..1200b24 100644
+--- a/include/adept/RangeIndex.h
++++ b/include/adept/RangeIndex.h
+@@ -360,10 +360,10 @@ namespace adept {
+   // User-accessible functions and objects
+ 
+   // The actual end object is held in a source file
+-  extern ::adept::internal::EndIndex end;
++  extern ADEPT_EXPORT ::adept::internal::EndIndex end;
+ 
+   // The actual "__" object is held in a source file
+-  extern ::adept::internal::AllIndex __;
++  extern ADEPT_EXPORT ::adept::internal::AllIndex __;
+ 
+   // Return a RangeIndex object representing all the integers between
+   // "begin" and "end"; the inputs can either be Expressions or ints
+diff --git a/include/adept/Stack.h b/include/adept/Stack.h
+index c91f9fd..e9bac4c 100644
+--- a/include/adept/Stack.h
++++ b/include/adept/Stack.h
+@@ -49,8 +49,8 @@ namespace adept {
+   // Declare a thread-safe and a thread-unsafe global pointer to the
+   // current stack
+   class Stack;
+-  extern ADEPT_THREAD_LOCAL Stack* _stack_current_thread;
+-  extern Stack* _stack_current_thread_unsafe;
++  extern ADEPT_EXPORT ADEPT_THREAD_LOCAL Stack* _stack_current_thread;
++  extern ADEPT_EXPORT Stack* _stack_current_thread_unsafe;
+ 
+   // Define ADEPT_ACTIVE_STACK to be the currently active version
+   // regardless of whether we are in thread safe or unsafe mode
+diff --git a/include/adept/Storage.h b/include/adept/Storage.h
+index d605f76..cce0fb5 100644
+--- a/include/adept/Storage.h
++++ b/include/adept/Storage.h
+@@ -42,8 +42,8 @@ namespace adept {
+   namespace internal {
+     // To check for memory leaks, we keep a running total of the number
+     // of Storage objects that are created and destroyed
+-    extern Index n_storage_objects_created_;
+-    extern Index n_storage_objects_deleted_;
++    extern ADEPT_EXPORT Index n_storage_objects_created_;
++    extern ADEPT_EXPORT Index n_storage_objects_deleted_;
+   }
+ 
+   // -------------------------------------------------------------------
+diff --git a/include/adept/base.h b/include/adept/base.h
+index 22f11ce..1a86eaf 100644
+--- a/include/adept/base.h
++++ b/include/adept/base.h
+@@ -15,6 +15,7 @@
+ 
+ #include <cstddef>
+ 
++#include <adept_export.h>
+ 
+ // ---------------------------------------------------------------------
+ // 0: Adept version number
+@@ -194,6 +195,12 @@
+ // you cannot get the code to compile, then you can make an empty
+ // declaration here.
+ //#define ADEPT_THREAD_LOCAL thread_local
++#if defined(_MSC_VER) && !defined(ADEPT_STATIC_DEFINE)
++// Thread-local storage does not work with DLL on Windows so we turn
++// it off and provide a blank definition of ADEPT_THREAD_LOCAL
++#define ADEPT_STACK_THREAD_UNSAFE 1
++#define ADEPT_THREAD_LOCAL
++#endif
+ 
+ // Define the following if you wish to use OpenMP to accelerate array
+ // expressions
+diff --git a/test/test_array_speed.cpp b/test/test_array_speed.cpp
+index a23df82..087f577 100644
+--- a/test/test_array_speed.cpp
++++ b/test/test_array_speed.cpp
+@@ -16,7 +16,7 @@ int main()
+ {
+   Timer timer;
+   timer.print_on_exit();
+-  int n = 128;
++  const int n = 128;
+ 
+   static const int rep = 10000;
+   //  static const int rep = 10;

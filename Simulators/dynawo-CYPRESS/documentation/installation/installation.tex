@@ -1,0 +1,377 @@
+%% Except where otherwise noted, content in this documentation is Copyright (c)
+%% 2015-2019, RTE (http://www.rte-france.com) and licensed under a
+%% CC-BY-4.0 (https://creativecommons.org/licenses/by/4.0/)
+%% license. All rights reserved.
+
+\documentclass[a4paper, 12pt]{report}
+
+% Latex setup
+\input{../latex_setup.tex}
+
+\begin{document}
+
+\title{\Dynawo Installation Documentation}
+\date\today
+
+\maketitle
+\tableofcontents
+
+\chapter{Install procedure}
+
+\Dynawo is available on two operating systems: \textbf{Linux} and \textbf{Windows}.
+You can either build it from sources on each operating system or use binaries distributed on Github.
+If you are on \textbf{MacOS} you can use a \hyperref[sec:docker]{Docker} solution.
+
+\section{\Dynawo binaries distribution}
+
+To start testing \Dynawo you can use binary releases on Github:
+\begin{itemize}
+\item
+  \href{https://github.com/dynawo/dynawo/releases/download/v1.4.0/Dynawo_Linux_v1.4.0.zip}{Linux}
+\item
+  \href{https://github.com/dynawo/dynawo/releases/download/v1.4.0/Dynawo_Windows_v1.4.0.zip}{Windows}
+\end{itemize}
+
+To use those distributions you need some requirements if you want to be able to fully use \Dynawo and add new models to the already available library of models.
+
+\subsection{Linux Requirements for Distribution}
+
+\begin{itemize}
+\item Compilers: C and C++ (\href{https://www.gnu.org/software/gcc}{gcc} or \href{https://clang.llvm.org}{clang}), c++11 compatible for C++ standard
+\item Python2 or Python3
+\item Binary utilities: \href{curl}{https://curl.haxx.se} and unzip
+\item \href{https://cmake.org/}{CMake}: minimum version 3.9.6
+\end{itemize}
+
+\textbf{Note:} For Python you need to have the \lstinline[language=bash]{python} command available in your PATH. If you don't have one you can use an environment variable to point to your Python version with \lstinline[language=bash]{export DYNAWO_PYTHON_COMMAND="python3"}.
+
+You can install the dependencies for Ubuntu or Fedora with:
+\begin{lstlisting}[language=bash]
+$> apt install -y g++ unzip curl python
+$> dnf install -y gcc-c++ unzip curl python
+\end{lstlisting}
+
+\subsection{Windows Requirements for Distribution}
+
+On Windows you can either run \Dynawo with the distribution models and in this case nothing is required. If you want to be able to add new models you will need:
+
+\begin{itemize}
+\item \href{https://visualstudio.microsoft.com}{Visual Studio 2019}
+\item \href{https://cmake.org/}{CMake}: minimum version 3.9.6
+\item \href{https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi}{Python2} or \href{https://www.python.org/ftp/python/3.8.2/python-3.8.2-amd64.exe}{Python3}
+\end{itemize}
+
+\textbf{Note:} For Python you need to have the \lstinline[language=bash]{python} command available in your PATH. If you don't have one you can use an environment variable to point to your Python version with \lstinline[language=command.com]{set DYNAWO_PYTHON_COMMAND=python3}.
+
+\subsection{Using a distribution}
+
+\subsubsection{Linux}
+
+You can launch the following commands to download and test the latest distribution:
+
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=false]
+$> curl -L $(curl -s -L -X GET https://api.github.com/repos/dynawo/dynawo/releases/latest | grep "Dynawo_Linux" | grep url | cut -d '"' -f 4) -o Dynawo_Linux_latest.zip
+$> unzip Dynawo_Linux_latest.zip
+$> cd dynawo
+$> ./dynawo.sh jobs-with-curves Dynawo_Linux_latest/testcases/IEEE14/IEEE14_SyntaxExamples/IEEE14_ModelicaModel/IEEE14.jobs
+$> ./dynawo.sh help
+$> ./dynawo.sh jobs --help
+\end{lstlisting}
+
+\subsubsection{Windows}
+
+Download the zip of the distribution and unzip it somewhere. Then open either \textbf{Command Prompt} or \textbf{x64 Native Tools Command Prompt for VS2019} (to be able to use your own models) and use \lstinline[language=bash]{cd} to go into the directory you previously unzipped. You should see a \textbf{dynawo.cmd} file at the top of the folder. You can then launch a simulation with:
+
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=false]
+> dynawo --jobs-file testcases\IEEE14\IEEE14_BasicTestCases\IEEE14_LoadVariation\IEEE14.jobs
+\end{lstlisting}
+
+\section{Building requirements}
+
+\subsection{Linux}
+
+\Dynawo has been tested on Linux platforms (Centos, Debian and Ubuntu based) and provided that you can install system packages there should be no problem on other Linux distribution.
+
+In the following we give a list of requirements needed to build \Dynawo and its dependencies.
+
+\paragraph{Global}
+
+\begin{itemize}
+\item Compilers: C and C++ (\href{https://www.gnu.org/software/gcc}{gcc} or \href{https://clang.llvm.org}{clang}), c++11 compatible for C++ standard
+\end{itemize}
+
+\paragraph{OpenModelica Compiler}
+
+\begin{itemize}
+\item
+  Compiler: Fortran (\href{https://gcc.gnu.org/fortran/}{gfortran})
+\item
+  Build systems:
+  \href{https://www.gnu.org/software/autoconf/}{autoconf},
+  \href{https://www.gnu.org/software/autoconf/}{automake},
+  \href{https://www.gnu.org/software/libtool/}{libtool},
+  \href{http://pkgconf.org/}{pkgconf}, make,
+  \href{https://cmake.org/}{CMake}
+\item
+  Binary utilities: \href{https://tukaani.org/xz/}{xz}, patch,
+  \href{https://www.gnu.org/software/sed/}{GNU sed}, msgfmt from
+  \href{https://www.gnu.org/software/gettext/}{gettext},
+  \href{https://rsync.samba.org/}{rsync}
+\item
+  Java (\href{https://openjdk.java.net/}{openjdk} for example)
+\item
+  Libraries: \href{https://libexpat.github.io/}{expat},
+  \href{http://www.netlib.org/blas/index.html}{BLAS},
+  \href{http://www.netlib.org/lapack/index.html}{LAPACK}
+\item
+  \href{http://lpsolve.sourceforge.net/}{lpsolve55} or
+  \href{https://www.gnu.org/software/bison/}{bison} and
+  \href{https://www.gnu.org/software/flex/}{flex} (to let OpenModelica
+  compiles lpsolve itself)
+\end{itemize}
+
+\paragraph{\Dynawo user}
+
+\begin{itemize}
+\item
+  \href{https://cmake.org/}{CMake}: minimum version 3.9.6
+\item
+  Libraries:
+
+  \begin{itemize}
+  \item
+    \href{https://www.libarchive.org/}{libarchive}: minimum version
+    2.8.0, latest 3.3.3 version has been tested and works fine
+  \item
+    \href{https://www.boost.org/}{Boost}: minimum version 1.64 in c++03 and 1.70 in c++11
+  \end{itemize}
+
+\item
+  Python2 or Python3
+\item
+  Python packages: \href{https://lxml.de/}{lxml}
+\item
+  Binary utilities: \href{https://curl.haxx.se/}{curl} or
+  \href{https://www.gnu.org/software/wget/}{wget},
+  \href{http://xmlsoft.org/xmllint.html}{xmllint}
+\end{itemize}
+
+\textbf{Note:} For Python you need to have the \lstinline[language=bash]{python} command available in your PATH. If you don't have one you can use an environment variable to point to your Python version with \lstinline[language=bash]{export DYNAWO_PYTHON_COMMAND="python3"}.
+
+\paragraph{\Dynawo developer}
+
+\begin{itemize}
+\item
+  \href{http://www.doxygen.nl/}{Doxygen}: minimum version 1.8,
+  \href{https://graphviz.readthedocs.io/en/stable/}{Graphviz} and LaTeX
+  to build full documentation
+\item
+  Python packages:
+  \href{https://psutil.readthedocs.io/en/latest/}{psutil}
+\item
+  \href{https://github.com/google/googletest}{GoogleTest}: minimum
+  version 1.5.0, latest 1.8.1 version has been tested and works fine on
+  recent OS
+\item
+  \href{http://ltp.sourceforge.net/coverage/lcov.php}{LCOV}: 1.7 to 1.13
+  versions work fine
+\end{itemize}
+
+\subsection{Windows}
+
+\begin{itemize}
+\item
+  \href{https://visualstudio.microsoft.com}{Visual Studio 2019}, Visual Studio 2015 and 2017 were also tested
+\item
+  \href{https://cmake.org}{CMake}
+\item
+  \href{https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi}{Python2} or \href{https://www.python.org/ftp/python/3.8.2/python-3.8.2-amd64.exe}{Python3}
+\end{itemize}
+
+\textbf{Note:} For Python you need to have the \lstinline[language=bash]{python} command available in your PATH. If you don't have one you can use an environment variable to point to your Python version with \lstinline[language=command.com]{set DYNAWO_PYTHON_COMMAND=python3}.
+
+\section[Building Dynawo]{Building \Dynawo}
+\label{Dynawo_Installation_Documentation_Building_Dynawo}
+\subsection{Linux}
+
+You can install the following packages to have no dependency problem in the following steps. This example works for Ubuntu: \\
+
+Command for Ubuntu 19.04:
+
+\begin{lstlisting}[language=bash]
+$> apt-get install -y git gcc g++ gfortran autoconf pkgconf automake make libtool cmake hwloc openjdk-8-jdk libblas-dev liblpsolve55-dev libarchive-dev doxygen doxygen-latex liblapack-dev libexpat1-dev libsqlite3-dev zlib1g-dev gettext patch clang python-pip libncurses5-dev libreadline-dev libdigest-perl-md5-perl unzip gcovr lcov libboost-all-dev qt4-qmake qt4-dev-tools lsb-release libxml2-utils python-lxml python-psutil wget libcurl4-openssl-dev rsync bash-completion
+\end{lstlisting}
+
+Command for Ubuntu 20.04:
+
+\begin{lstlisting}[language=bash]
+$> apt install -y git gcc g++ gfortran autoconf pkgconf automake make libtool cmake hwloc openjdk-8-jdk libblas-dev liblpsolve55-dev libarchive-dev doxygen doxygen-latex liblapack-dev libexpat1-dev libsqlite3-dev zlib1g-dev gettext patch clang python3-pip libncurses5-dev libreadline-dev libdigest-perl-md5-perl unzip gcovr lcov libboost-all-dev qt5-default lsb-release libxml2-utils python-lxml python-psutil wget libcurl4-openssl-dev rsync libopenblas-openmp-dev
+\end{lstlisting}
+
+Command for Fedora:
+
+\begin{lstlisting}[language=bash]
+$> dnf install -y git gcc gcc-c++ gcc-gfortran autoconf automake make libtool cmake hwloc java-1.8.0-openjdk-devel blas-devel lapack-devel lpsolve-devel expat-devel glibc-devel sqlite-devel libarchive-devel zlib-devel doxygen doxygen-latex qt-devel gettext patch wget python-devel clang llvm-devel ncurses-devel readline-devel unzip perl-Digest-MD5 vim gcovr python-pip python-psutil boost-devel lcov gtest-devel gmock-devel xz rsync python-lxml graphviz libcurl-devel bash-completion
+\end{lstlisting}
+
+To build \Dynawo you need to clone its repository and launch the following commands in the source code directory:
+
+\begin{lstlisting}[language=bash]
+$> git clone https://github.com/dynawo/dynawo.git dynawo
+$> cd dynawo
+$> echo '#!/bin/bash
+export DYNAWO_HOME=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+export DYNAWO_SRC_OPENMODELICA=$DYNAWO_HOME/OpenModelica/Source
+export DYNAWO_INSTALL_OPENMODELICA=$DYNAWO_HOME/OpenModelica/Install
+
+export DYNAWO_LOCALE=en_GB
+export DYNAWO_RESULTS_SHOW=true
+export DYNAWO_BROWSER=firefox
+
+export DYNAWO_NB_PROCESSORS_USED=1
+
+export DYNAWO_BUILD_TYPE=Release
+
+$DYNAWO_HOME/util/envDynawo.sh $@' > myEnvDynawo.sh
+$> chmod +x myEnvDynawo.sh
+$> ./myEnvDynawo.sh build-user
+\end{lstlisting}
+
+Below is a description of some environment variables that might be changed in the file \textit{myEnvDynawo.sh}:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+  \hline
+   DYNAWO\_BROWSER & Default browser command \\
+  \hline
+   DYNAWO\_NB\_PROCESSORS\_USED & Maximum number of cores to use \\
+  \hline
+   DYNAWO\_BUILD\_TYPE & Build type: Release or Debug \\
+  \hline
+   DYNAWO\_COMPILER & Compiler: GCC (default) or CLANG \\
+  \hline
+\end{tabular}
+\end{center}
+
+We advise the user to install an autocompletion script to help you with the available commands in \Dynawo.
+It will also add an alias to your bashrc or zshrc to be able to execute \Dynawo from anywhere. You can launch one of the following commands:
+\begin{lstlisting}[language=bash,deletekeywords={help,source}]
+$> ./myEnvDynawo.sh deploy-autocompletion --deploy --shell-type bash
+$> ./myEnvDynawo.sh deploy-autocompletion --deploy --shell-type zsh
+\end{lstlisting}
+
+\textbf{Warning}: If you're working behind a proxy make sure you have exported the following proxy environment variables:
+
+\begin{lstlisting}[language=bash]
+$> export http_proxy=http://login:mdp@proxy_address:proxy_port/
+$> export https_proxy=http://login:mdp@proxy_address:proxy_port/
+$> export no_proxy=localhost,127.0.0.0/8,::1
+$> export HTTP_PROXY=$http_proxy;export HTTPS_PROXY=$https_proxy;export NO_PROXY=$no_proxy;
+\end{lstlisting}
+\subsection{Windows}
+Open \textbf{x64 Native Tools Command Prompt for VS2019} and run the following commands:
+\begin{lstlisting}[language=bash]
+> git config --global core.eol lf
+> git config --global core.autocrlf input
+> set OPENMODELICAHOME=
+> set OPENMODELICALIBRARY=
+> md dynawo-project && cd dynawo-project
+> git clone https://github.com/dynawo/dynawo.git dynawo
+> cd dynawo
+> cmake -S dynawo/3rdParty -B b-3-p -DCMAKE_INSTALL_PREFIX=../d-3-p -DOPENMODELICA_INSTALL=../OpenModelica/Install -DOPENMODELICA_SRC=../OpenModelica/Source -DOMDEV_HOME=../OMDev -G "NMake Makefiles"
+> cmake --build b-3-p
+> cmake -S dynawo -B b -DCMAKE_INSTALL_PREFIX=../d-i -DDYNAWO_HOME=.. -DINSTALL_OPENMODELICA=../../OpenModelica/Install -DDYNAWO_THIRD_PARTY_DIR=../../d-3-p -G "NMake Makefiles
+> cmake --build b --target install
+> cmake --build b --target models
+> cmake --build b --target solvers
+\end{lstlisting}
+
+\section[Launching Dynawo]{Launching \Dynawo}
+
+Once you have installed and compiled \Dynawo as explained in part \ref{Dynawo_Installation_Documentation_Building_Dynawo}, you can launch a simulation by calling one example from DynaFlow, DynaSwing or DynaWaltz:
+
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=false]
+$> ./myEnvDynawo.sh jobs examples/DynaWaltz/IEEE14/IEEE14_GeneratorDisconnections/IEEE14.jobs
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=false]
+$> ./myEnvDynawo.sh jobs examples/DynaSwing/IEEE14/IEEE14_Fault/IEEE14.jobs
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=false]
+$> ./myEnvDynawo.sh jobs examples/DynaFlow/IEEE14/IEEE14_DisconnectLine/IEEE14.jobs
+\end{lstlisting}
+
+This command launches a simple simulation on the IEEE 14-bus network that should succeed if your installation went well and your compilation finished successfully.
+
+The correctness of the simulation can be checked by looking into the outputs directory and compare its content with the ones from the reference outputs directory (especially the curves file).
+The command lines are given for the DynaWaltz example but are similar for the two other examples (only replace DynaWaltz by DynaSwing or DynaFlow).
+
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=false]
+$> cd examples/DynaWaltz/IEEE14/IEEE14_GeneratorDisconnections
+$> ls outputs
+$> diff outputs/curves/curves.csv reference/outputs/curves/curves.csv
+\end{lstlisting}
+
+All the simulation outputs are stored into the outputs directory, as specified in the jobs file. \\
+
+It is also possible to display directly simulation results - plots - into a simple GUI (created for demonstration purpose) by using for example the following command:
+
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=false]
+$> ./myEnvDynawo.sh jobs-with-curves examples/DynaWaltz/IEEE14/IEEE14_GeneratorDisconnections/IEEE14.jobs
+\end{lstlisting}
+
+For example, for the generator disconnections simulation - DynaWaltz example, on Figure~\ref{IEEE14GeneratorDisconnections} we can see the plot for the voltage module on bus 1.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{../resources/VoltageModule.png}
+\caption{\Dynawo results on DynaWaltz - IEEE14 - Generator disconnections case}
+\label{IEEE14GeneratorDisconnections}
+\end{figure}
+
+\section{\Dynawo Docker}
+\label{sec:docker}
+
+We provide on \href{https://hub.docker.com/r/dynawo/dynawo}{Docker Hub} an image of \Dynawo master. You can use it by launching the following command:
+
+\begin{lstlisting}[language=bash]
+$> docker run -it dynawo/dynawo
+\end{lstlisting}
+
+You can have more information on how to use Docker to build and try \Dynawo \href{https://github.com/dynawo/dynawo-docker}{here}.
+
+\section{Third parties}
+
+To run a simulation, \Dynawo uses several external libraries that are downloaded and compiled during the building process:
+\begin{itemize}
+\item \href{https://www.openmodelica.org/} {\underline{OpenModelica}} \cite{openmodelica}, a Modelica \cite{modelica} environment developed and maintained by the Open Source Modelica Consortium distributed under a GPL V3.0 or OSMC Public License V1.2. \Dynawo is currently using the version 1.13.2 of the OpenModelica compiler to compile Modelica models either at run-time or beforehand during the compilation process. OpenModelica compiler source code is modified to match specific needs from \Dynawo ; these modifications are available in \path|dynawo/3rdParty/omcUpdate_1_13_2|.
+
+\item \href{https://computation.llnl.gov/projects/sundials}{\underline{SUNDIALS}} \cite{hindmarsh2005sundials}, a suite of solvers developed and maintained by the Lawrence Livermore National Lab distributed under a BSD-3-Clause license. \newline \Dynawo is currently using the version 5.3.0 from SUNDIALS. Small modifications on the library are applied to fit \Dynawo's needs and are available in \path|dynawo/3rdParty/sundials|. In particular, KINSOL and IDA from the SUNDIALS library are called to solve the Algebraic Equations and Differential Algebraic Equations systems arising during the simulation.
+
+\item \href{http://faculty.cse.tamu.edu/davis/suitesparse.html} {\underline{SuiteSparse}}, a suite of sparse matrix algorithms and in particular KLU \cite{DavisKLU}, a LU decomposition library that is  developed and maintained by T. A. Davis et al. at the University of Florida. \Dynawo currently uses the V 5.4.0 version of the suite sparse library that is distributed under a LGPL-2.1+ license. KLU is used inside KINSOL and IDA to make the LU decomposition required during Newton-Raphson resolutions.
+
+\item \href{http://www.met.reading.ac.uk/clouds/adept/}{\underline{Adept}} \cite{hogan_robin_j_2017_1004730} \cite{Hogan:2014:FRA:2639949.2560359}, an automatic differentiation library that is developed and maintained at the University of Reading by R.J. Hogan. The 2.1.1 version is currently employed into \Dynawo to evaluate the Jacobian matrices for Modelica models during the simulation and distributed under both Apache-2.0, GPL-2.0 and MIT licenses.
+
+\item \href{http://xerces.apache.org/xerces-c/}{\underline{Xerces-C++}} a validating XML parser written in a portable subset of C++ and distributed under the Apache Software License, Version 2.0. The current version used is 3.2.2.
+
+\item \href{http://xmlsoft.org/}{\underline{Libxml2}} a XML C parser and toolkit distributed under the MIT License. The current version used is 2.9.4.
+
+\item \href{https://www.powsybl.org/pages/documentation/developer/repositories/powsybl-iidm4cpp.html}{\underline{PowSyBl - iidm4cpp}} a C++ implementation of the IIDM grid model and distributed under the MPL License, Version 2.0. The current version used is 1.4.0.
+
+\item \href{http://nicslu.weebly.com/} {\underline{NICSLU}} \cite{chenNicsLu} which is another LU decomposition library. It is developed and maintained by Tsinghua University and is optional at the moment into \Dynawo .If downloaded by the user, it could be used for LU decomposition in a similar way than KLU. This library is distributed under GNU LGPL license for open-source projects.
+\end{itemize}
+
+In addition to these libraries needed for the simulation process, \Dynawo downloads the code for two other libraries:
+\begin{itemize}
+\item \href{https://jquery.com/}{\underline{jQuery}} is used to provide a minimalistic GUI with \Dynawo that enables to visualize the results into a browser. jQuery is distributed under both a MIT and GPL license.
+\item \href{https://github.com/google/styleguide/tree/gh-pages/cpplint}{\underline{cpplint}}, a tool used during \Dynawo compilation process to ensure that the C++ files follow the Google\textquotesingle s C++ style.
+\end{itemize}
+
+Finally, \Dynawo also uses a large number of other system libraries for its compilation process, the unit testing process or to build its source documentation. These libraries must be installed by the developer before compiling \Dynawo and the complete list is given in \ref{Dynawo_Installation_Documentation_Building_Dynawo}.
+
+\bibliography{../resources/dynawoDocumentation}
+\bibliographystyle{abbrv}
+
+\end{document}

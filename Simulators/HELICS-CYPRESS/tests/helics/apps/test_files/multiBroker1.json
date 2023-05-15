@@ -1,0 +1,13 @@
+{
+  "master": {
+    "core_type": "test"
+  },
+  "comms": [
+    {
+      "core_type": "zmq"
+    },
+    {
+      "core_type": "tcp"
+    }
+  ]
+}

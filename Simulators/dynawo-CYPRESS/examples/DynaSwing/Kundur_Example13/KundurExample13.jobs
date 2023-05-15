@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    Copyright (c) 2015-2019, RTE (http://www.rte-france.com)
+    See AUTHORS.txt
+    All rights reserved.
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, you can obtain one at http://mozilla.org/MPL/2.0/.
+    SPDX-License-Identifier: MPL-2.0
+
+    This file is part of Dynawo, an hybrid C++/Modelica open source time domain
+    simulation tool for power systems.
+-->
+<dyn:jobs xmlns:dyn="http://www.rte-france.com/dynawo">
+  <dyn:job name="Kundur Example 13 - Set-point case">
+      <dyn:solver lib="dynawo_SolverIDA" parFile="KundurExample13.par" parId="IDAOrder2"/>
+      <dyn:modeler compileDir="outputs_SetPoint/compilation">
+        <dyn:dynModels dydFile="KundurExample13_SetPoint.dyd"/>
+        <dyn:precompiledModels useStandardModels="true"/>
+        <dyn:modelicaModels useStandardModels="true">
+          <dyn:directory path="." recursive="false"/>
+        </dyn:modelicaModels>
+      </dyn:modeler>
+      <dyn:simulation startTime="0" stopTime="5"/>
+      <dyn:outputs directory="outputs_SetPoint">
+      <dyn:curves inputFile="KundurExample13.crv" exportMode="CSV"/>
+        <dyn:logs>
+          <dyn:appender tag="" file="dynawo.log" lvlFilter="INFO"/>
+        </dyn:logs>
+      </dyn:outputs>
+  </dyn:job>
+  <dyn:job name="Kundur Example 13 - VRKundur and no Pss case">
+      <dyn:solver lib="dynawo_SolverIDA" parFile="KundurExample13.par" parId="IDAOrder2"/>
+      <dyn:modeler compileDir="outputs_VR_NoPss/compilation">
+        <dyn:dynModels dydFile="KundurExample13_VR_NoPss.dyd"/>
+        <dyn:precompiledModels useStandardModels="true"/>
+        <dyn:modelicaModels useStandardModels="true">
+          <dyn:directory path="." recursive="false"/>
+        </dyn:modelicaModels>
+      </dyn:modeler>
+      <dyn:simulation startTime="0" stopTime="5"/>
+      <dyn:outputs directory="outputs_VR_NoPss">
+      <dyn:curves inputFile="KundurExample13.crv" exportMode="CSV"/>
+        <dyn:logs>
+          <dyn:appender tag="" file="dynawo.log" lvlFilter="INFO"/>
+        </dyn:logs>
+      </dyn:outputs>
+  </dyn:job>
+  <dyn:job name="Kundur Example 13 - VRKundur and PssKundur case">
+      <dyn:solver lib="dynawo_SolverIDA" parFile="KundurExample13.par" parId="IDAOrder2"/>
+      <dyn:modeler compileDir="outputs_VR_Pss/compilation">
+        <dyn:dynModels dydFile="KundurExample13_VR_Pss.dyd"/>
+        <dyn:precompiledModels useStandardModels="true"/>
+        <dyn:modelicaModels useStandardModels="true">
+          <dyn:directory path="." recursive="false"/>
+        </dyn:modelicaModels>
+      </dyn:modeler>
+      <dyn:simulation startTime="0" stopTime="5"/>
+      <dyn:outputs directory="outputs_VR_Pss">
+      <dyn:curves inputFile="KundurExample13.crv" exportMode="CSV"/>
+        <dyn:logs>
+          <dyn:appender tag="" file="dynawo.log" lvlFilter="INFO"/>
+        </dyn:logs>
+      </dyn:outputs>
+  </dyn:job>
+</dyn:jobs>

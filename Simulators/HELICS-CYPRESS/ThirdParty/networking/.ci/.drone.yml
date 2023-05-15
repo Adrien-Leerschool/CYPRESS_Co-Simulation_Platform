@@ -1,0 +1,67 @@
+kind: pipeline
+name: arm
+
+platform:
+  os: linux
+  arch: arm
+
+steps:
+  - name: uname
+    image: alpine:3.12
+    commands:
+      - uname -a
+
+  - name: submodules
+    image: alpine:3.12
+    commands:
+      # for updating submodules to latest upstream, add --remote
+      - apk add --no-cache git
+      - git submodule update --init --recursive
+
+  - name: build
+    image: alpine:3.12
+    commands:
+      - apk update
+      - apk add --no-cache build-base git bash cmake ninja linux-headers
+      - ctest --build-and-test . build --build-generator Ninja --output-on-failure --test-command ctest
+
+trigger:
+  ref:
+    include:
+      - refs/heads/main
+      - 'refs/pull/**'
+      - 'refs/tags/**'
+
+---
+kind: pipeline
+name: arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+  - name: uname
+    image: alpine
+    commands:
+      - uname -a
+
+  - name: submodules
+    image: alpine/git
+    commands:
+      # for updating submodules to latest upstream, add --remote
+      - git submodule update --init --recursive
+
+  - name: build
+    image: alpine
+    commands:
+      - apk update
+      - apk add --no-cache build-base git bash cmake ninja linux-headers
+      - ctest --build-and-test . build --build-generator Ninja --output-on-failure --test-command ctest
+
+trigger:
+  ref:
+    include:
+      - refs/heads/main
+      - 'refs/pull/**'
+      - 'refs/tags/**'

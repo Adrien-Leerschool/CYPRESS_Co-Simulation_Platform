@@ -1,0 +1,28 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4fd93d0..6a67d0a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,12 @@
+ #
+ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12 FATAL_ERROR)
++#
++if(${CMAKE_VERSION} VERSION_GREATER "3.15.0")
++  if(POLICY CMP0091)
++    cmake_policy(SET CMP0091 NEW)
++  endif()
++endif()
++#
+ if(POLICY CMP0074)
+   cmake_policy(SET CMP0074 NEW) #3.12.0 `find_package()`` uses ``<PackageName>_ROOT`` variables.
+ endif()
+@@ -406,6 +413,9 @@ SET(ADDITIONAL_LIBS "")
+ #
+ IF(ENABLE_ZLIB)
+   FIND_PACKAGE(ZLIB)
++  if(MSVC)
++    set(CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_FIND_LIBRARY_SUFFIXES_bak}")
++  endif()
+ ELSE()
+   SET(ZLIB_FOUND FALSE) # Override cached value
+ ENDIF()
+ 

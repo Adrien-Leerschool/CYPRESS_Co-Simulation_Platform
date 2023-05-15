@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2015-2020, RTE (http://www.rte-france.com)
+    See AUTHORS.txt
+    All rights reserved.
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, you can obtain one at http://mozilla.org/MPL/2.0/.
+    SPDX-License-Identifier: MPL-2.0
+
+    This file is part of Dynawo, an hybrid C++/Modelica open source time domain
+    simulation tool for power systems.
+-->
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:dyn="http://www.rte-france.com/dynawo"
+           targetNamespace="http://www.rte-france.com/dynawo"
+           elementFormDefault="qualified">
+  <xs:element name="criteria">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="busCriteria" type="dyn:BusCriteria" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="loadCriteria" type="dyn:Criteria" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="generatorCriteria" type="dyn:Criteria" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="BusCriteria">
+    <xs:sequence>
+      <xs:element name="parameters" type="dyn:CriteriaParamsWithVoltageLevel" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="component" minOccurs="0" maxOccurs="unbounded" type="dyn:BusComponent"/>
+      <xs:element name="country" minOccurs="0" maxOccurs="unbounded" type="dyn:Country"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BusComponent">
+    <xs:attribute name="id" use="required" type="xs:string"/>
+    <xs:attribute name="voltageLevelId" use="optional" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="Criteria">
+    <xs:sequence>
+      <xs:element name="parameters" type="dyn:CriteriaParams" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="component" minOccurs="0" maxOccurs="unbounded" type="dyn:Component"/>
+      <xs:element name="country" minOccurs="0" maxOccurs="unbounded" type="dyn:Country"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Component">
+    <xs:attribute name="id" use="required" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="Country">
+    <xs:attribute name="id" use="required" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="CriteriaParams">
+    <xs:sequence>
+        <xs:element name="voltageLevel" type="dyn:CriteriaParamsVoltageLevel" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" use="required" type="xs:string"/>
+    <xs:attribute name="scope" use="required" type="dyn:Scope"/>
+    <xs:attribute name="type" use="required" type="dyn:Type"/>
+    <xs:attribute name="pMax" use="optional" type="xs:float"/>
+    <xs:attribute name="pMin" use="optional" type="xs:float"/>
+  </xs:complexType>
+
+  <xs:complexType name="CriteriaParamsVoltageLevel">
+    <xs:attribute name="uMaxPu" use="optional" type="xs:float"/>
+    <xs:attribute name="uMinPu" use="optional" type="xs:float"/>
+    <xs:attribute name="uNomMax" use="optional" type="xs:float"/>
+    <xs:attribute name="uNomMin" use="optional" type="xs:float"/>
+  </xs:complexType>
+
+  <xs:complexType name="CriteriaParamsWithVoltageLevel">
+    <xs:attribute name="id" use="required" type="xs:string"/>
+    <xs:attribute name="scope" use="required" type="dyn:Scope"/>
+    <xs:attribute name="type" use="required" type="dyn:Type"/>
+    <xs:attribute name="pMax" use="optional" type="xs:float"/>
+    <xs:attribute name="pMin" use="optional" type="xs:float"/>
+    <xs:attribute name="uMaxPu" use="optional" type="xs:float"/>
+    <xs:attribute name="uMinPu" use="optional" type="xs:float"/>
+    <xs:attribute name="uNomMax" use="optional" type="xs:float"/>
+    <xs:attribute name="uNomMin" use="optional" type="xs:float"/>
+  </xs:complexType>
+
+  <xs:simpleType name="Scope">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="FINAL"/>
+      <xs:enumeration value="DYNAMIC"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="LOCAL_VALUE"/>
+      <xs:enumeration value="SUM"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

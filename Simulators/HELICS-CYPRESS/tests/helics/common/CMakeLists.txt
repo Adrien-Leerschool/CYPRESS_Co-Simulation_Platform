@@ -1,0 +1,23 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Copyright (c) 2017-2023, Battelle Memorial Institute; Lawrence Livermore
+# National Security, LLC; Alliance for Sustainable Energy, LLC.
+# See the top-level NOTICE for additional details.
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# -----------------------------------------------------------------------------
+# Common library tests using Boost
+# -----------------------------------------------------------------------------
+
+set(common_test_headers)
+
+set(common_test_sources TimeTests.cpp JsonGenerationTests.cpp SmallBufferTests.cpp)
+
+add_executable(common-tests ${common_test_sources} ${common_test_headers})
+target_link_libraries(common-tests PRIVATE HELICS::core helics_test_base fmt::fmt)
+set_target_properties(common-tests PROPERTIES FOLDER tests)
+
+add_test(NAME common-tests COMMAND common-tests)
+set_property(TEST common-tests PROPERTY LABELS Common Daily Coverage Continuous)

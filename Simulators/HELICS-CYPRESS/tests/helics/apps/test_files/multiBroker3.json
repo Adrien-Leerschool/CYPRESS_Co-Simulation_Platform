@@ -1,0 +1,13 @@
+{
+  "comms": [
+    {
+      "core_type": "zmq"
+    },
+    {
+      "core_type": "ipc"
+    },
+    {
+      "core_type": "tcp"
+    }
+  ]
+}

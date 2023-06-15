@@ -2,8 +2,6 @@ import xmltodict
 
 from cycosim.domain.ports import Parser, ParsedFileObject
 
-from cycosim.adapters.parsed_files import IIDMObject
-
 from cycosim.domain.models.power_system import (
     Component,
     Bus,
@@ -133,6 +131,8 @@ class DynawoParserIIDM(Parser):
 
     def __init__(self, _file_to_parse):
         super().__init__(_file_to_parse)
+        from .dynawo_files import IIDMObject
+
         self.parsed_file_obj = IIDMObject()
 
     def parse(self) -> ParsedFileObject:

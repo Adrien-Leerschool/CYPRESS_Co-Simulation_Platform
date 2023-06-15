@@ -15,4 +15,10 @@ from .power_system_model import (  # noqa
     PowerSystemModel,
 )
 
-from .dynawo import DynawoModel  # noqa
+from .dynamic_components import (  # noqa
+    DynamicModel,
+    DynamicComponent,
+    StaticReference,
+    Connector,
+    Connection,
+)

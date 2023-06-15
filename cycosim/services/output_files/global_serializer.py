@@ -3,6 +3,8 @@ from cycosim.domain.ports import Serializer, ObjectToSerialize, FileType
 from cycosim.adapters.serializers.dynawo import (
     DynawoSerializerIIDM,
     DynawoSerializerJOBS,
+    DynawoSerializerDYD,
+    DynawoSerializerPAR,
 )
 
 from cycosim.adapters.parsers import UnknownFileFormatError
@@ -20,6 +22,13 @@ class GlobalSerializer(Serializer):
 
         elif self.object_to_serialize.target_file_type == FileType.JOBS:
             serializer = DynawoSerializerJOBS(self.object_to_serialize)
+
+        elif self.object_to_serialize.target_file_type == FileType.DYD:
+            serializer = DynawoSerializerDYD(self.object_to_serialize)
+
+        elif self.object_to_serialize.target_file_type == FileType.PAR:
+            serializer = DynawoSerializerPAR(self.object_to_serialize)
+
         else:
             raise UnknownFileFormatError(
                 f"Unknown targeted output file type '{self.object_to_serialize.target_file_type}'."

@@ -5,6 +5,8 @@ from .ports import (  # noqa
     InputFile,
     Serializer,
     ObjectToSerialize,
+    ExternalElement,
+    Simulation,
 )
 
 from .models import (  # noqa
@@ -20,5 +22,9 @@ from .models import (  # noqa
     SimulationModel,
     PowerSystemModel,
     Component,
-    DynawoModel,
+    DynamicComponent,
+    StaticReference,
+    Connector,
+    Connection,
+    DynamicModel,
 )

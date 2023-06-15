@@ -1,6 +1,3 @@
-[submodule "Simulators/dynawo-CYPRESS"]
-	path = Simulators/dynawo-CYPRESS
-	url = https://github.com/Adrien-Leerschool/dynawo-CYPRESS.git
 [submodule "Simulators/HELICS-CYPRESS"]
 	path = Simulators/HELICS-CYPRESS
 	url = https://github.com/Adrien-Leerschool/HELICS-CYPRESS.git

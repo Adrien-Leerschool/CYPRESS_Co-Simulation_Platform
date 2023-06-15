@@ -1,25 +1,28 @@
-import xmltodict
+def remove_superfluous(xml_dict: dict, to_remove: list[str]):
+    """_summary_
+    Return the given dictionary where the key values have been freed from the
+    elements of the 'to_remove' list.
 
+    Args:
+        xml_dict (dict): The dictionary to clean
+        to_remove (list): The elements to remove from the keys
 
+    Returns:
+        light_dict (dict): The cleaned dictionary
+    """
+    light_dict = {}
+    for key, val in xml_dict.items():
+        if isinstance(val, dict):
+            for t_r in to_remove:
+                key = key.replace(t_r, "")
+            light_dict[key] = remove_superfluous(val, to_remove)
 
-if __name__ == "__main__" :
-    
-    path = "/Users/adrienleerschool/Documents/Cypress/cypress-simulator/cypress_simulator/"
-    path += "simulators/dynawo_fred/dynawo/examples/DynaSwing/IEEE39/IEEE39_Cosim/IEEE39.iidm"
-    
-    # Reading the data inside the xml
-    # file to a variable under the name
-    # data
-    with open(path, 'r') as f:
-        xml_data = f.read()
-     
-    my_dict = xmltodict.parse(xml_data)
-    
-    cnt = 0
-    for key, val in my_dict['iidm:network']['iidm:substation'].items() :
-        print(f"{key} : {val}")
-        if cnt > 4 :
-            break 
-        cnt += 1
-    
-    
+        elif isinstance(val, list):
+            light_dict[key] = [remove_superfluous(elem, to_remove) for elem in val]
+
+        else:
+            for t_r in to_remove:
+                key = key.replace(t_r, "")
+
+            light_dict[key] = val
+    return light_dict

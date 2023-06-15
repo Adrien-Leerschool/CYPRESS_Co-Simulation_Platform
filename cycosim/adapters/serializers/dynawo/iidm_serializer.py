@@ -77,7 +77,11 @@ def xml_cpnt_serialize(out_file: io.TextIOWrapper, cpnt: Component, nbr_tabs: in
     # If there is variables in the infos dictionary, add them.
     for key, val in cpnt.info.items():
         out_file.write(f' {key}="{val}"')
-    out_file.write(">\n")
+
+    if cpnt.sub_components:
+        out_file.write(">\n")
+    else:
+        out_file.write("/>\n")
 
     # Recursively write the sub-components to the file.
     if cpnt.sub_components:

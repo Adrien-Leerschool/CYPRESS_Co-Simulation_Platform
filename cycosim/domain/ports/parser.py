@@ -1,9 +1,9 @@
-import abc
+from abc import ABC, abstractmethod
 
 from cycosim.domain.ports import FileType
 
 
-class ParsedFileObject:
+class ParsedFileObject(ABC):
     """ "
     Summary :
         Every parser must return a ParsedFileObject after having successfuly parsed a given file.
@@ -20,8 +20,12 @@ class ParsedFileObject:
         self.parsed_file_type = _parsed_file_type
         self.parsed_file_object = _parsed_file_object
 
+    @abstractmethod
+    def get_object(self):
+        return self.parsed_file_object
 
-class Parser(abc.ABC):
+
+class Parser(ABC):
     """
     Summary :
         Abstract class that every parser must inherit from.
@@ -37,6 +41,6 @@ class Parser(abc.ABC):
         self.file_to_parse = _file_to_parse
         self.parsed_file_obj = _parsed_file_obj
 
-    @abc.abstractmethod
+    @abstractmethod
     def parse(self) -> ParsedFileObject:
         pass

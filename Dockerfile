@@ -53,7 +53,9 @@ RUN apt-get update && apt-get install -y \
     qt5-qmake \
     qtbase5-dev-tools \
     nano \
-    pkg-config
+    pkg-config \
+    python3-venv \
+    bash-completion
 
 COPY . /CYPRESS_Co-Simulation_Platform
 

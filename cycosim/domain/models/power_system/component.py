@@ -42,70 +42,70 @@ class Component:
             if elem.id == component_id:
                 return elem
             elif elem.sub_components:
-                elem.get_sub_components(component_id)
+                return elem.get_sub_component(component_id)
 
         return None
 
 
 class Bus(Component):
-    V: float
-    nominal_V: float
-    phase: float
-    is_slack_bus: bool
+    V: float = None
+    nominal_V: float = None
+    phase: float = None
+    is_slack_bus: bool = None
 
 
 class Switch(Component):  # or Breaker ?
-    is_open: bool
-    voltage_level: str
+    is_open: bool = None
+    voltage_level: str = None
 
 
 class Generator(Component):
-    bus: Bus
-    active_power_min: float
-    active_power_max: float
-    reactive_power_min: float
-    reactive_power_max: float
-    is_voltage_regulation: bool
-    active_power_target: float
-    voltage_magnitude_target: float
-    reactive_power_target: float
-    active_power_output: float
-    reactive_power_output: float
-    rated_nominal_apparent_power: float
+    bus: Bus = None
+    active_power_min: float = None
+    active_power_max: float = None
+    reactive_power_min: float = None
+    reactive_power_max: float = None
+    is_voltage_regulation: bool = None
+    active_power_target: float = None
+    voltage_magnitude_target: float = None
+    reactive_power_target: float = None
+    active_power_output: float = None
+    reactive_power_output: float = None
+    rated_nominal_apparent_power: float = None
 
 
 class Load(Component):
-    bus: Bus
-    active_power_setpoint: float
-    reactive_power_setpoint: float
-    active_power_output: float
-    reactive_power_output: float
+    bus: Bus = None
+    active_power_setpoint: float = None
+    reactive_power_setpoint: float = None
+    active_power_output: float = None
+    reactive_power_output: float = None
 
 
 class ShuntCompensator(Component):
-    bus: Bus
-    susceptance: float
+    bus: Bus = None
+    susceptance: float = None
 
 
 class StaticVARCompensator(Component):
-    bus: Bus
-    reactive_power_setpoint: float
+    bus: Bus = None
+    reactive_power_setpoint: float = None
 
 
 class Edge(Component):
-    bus_1: Bus
-    bus_2: Bus
+    bus_1: Bus = None
+    bus_2: Bus = None
 
 
 class ACLine(Edge):
-    resistance: float
-    reactance: float
-    half_shunt_susceptance: float
-    rated_nominal_apparent_power: float
+    resistance: float = None
+    reactance: float = None
+    half_shunt_susceptance: float = None
+    rated_nominal_apparent_power: float = None
 
 
 class Transformer(Edge):
-    resistance: float
-    reactance: float
-    magnetizing_susceptance: float
-    rated_nominal_apparent_power: float
+    resistance: float = None
+    reactance: float = None
+    magnetizing_susceptance: float = None
+    rated_nominal_apparent_power: float = None

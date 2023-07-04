@@ -8,6 +8,8 @@ class FileType(str, Enum):
     PAR = "par"
     JOBS = "jobs"
     JSON = "json"
+    XML = "xml"
+    CRV = "crv"
 
 
 class InputFile(str, Enum):

@@ -1,1 +1,1 @@
-from .global_parser import GlobalParser  # noqa
+from .global_parser import DynawoGlobalParser, HelicsGlobalParser  # noqa

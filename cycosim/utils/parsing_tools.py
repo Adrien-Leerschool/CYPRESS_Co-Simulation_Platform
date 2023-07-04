@@ -18,6 +18,8 @@ def remove_superfluous(xml_dict: dict, to_remove: list[str]):
             light_dict[key] = remove_superfluous(val, to_remove)
 
         elif isinstance(val, list):
+            for t_r in to_remove:
+                key = key.replace(t_r, "")
             light_dict[key] = [remove_superfluous(elem, to_remove) for elem in val]
 
         else:

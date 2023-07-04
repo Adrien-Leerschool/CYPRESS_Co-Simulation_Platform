@@ -3,4 +3,7 @@ from .dynawo import (  # noqa
     DynawoSerializerJOBS,
     DynawoSerializerDYD,
     DynawoSerializerPAR,
+    DynawoSerializerCRV,
 )
+
+from .helics import HelicsSerializerJSON  # noqa

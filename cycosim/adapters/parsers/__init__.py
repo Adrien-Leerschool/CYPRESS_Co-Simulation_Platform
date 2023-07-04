@@ -5,8 +5,7 @@ from .dynawo import (  # noqa
     DynawoParserIIDM,
     DynawoParserJOBS,
     DynawoParserPAR,
-    DYDObject,
-    IIDMObject,
-    JOBSObject,
-    PARObject,
+    DynawoParserCRV,
 )
+
+from .helics import HelicsParserXML  # noqa

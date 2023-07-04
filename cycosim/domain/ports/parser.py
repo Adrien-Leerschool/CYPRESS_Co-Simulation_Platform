@@ -16,13 +16,12 @@ class ParsedFileObject(ABC):
 
     parsed_file_type: FileType
 
-    def __init__(self, _parsed_file_type: FileType, _parsed_file_object):
+    def __init__(self, _parsed_file_type: FileType):
         self.parsed_file_type = _parsed_file_type
-        self.parsed_file_object = _parsed_file_object
 
     @abstractmethod
     def get_object(self):
-        return self.parsed_file_object
+        pass
 
 
 class Parser(ABC):

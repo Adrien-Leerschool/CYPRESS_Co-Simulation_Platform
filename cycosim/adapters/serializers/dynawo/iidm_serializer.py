@@ -1,6 +1,5 @@
 import io
 
-from cycosim.domain.ports import Serializer, ObjectToSerialize
 from cycosim.domain.models.power_system import Component
 
 
@@ -91,7 +90,7 @@ def xml_cpnt_serialize(out_file: io.TextIOWrapper, cpnt: Component, nbr_tabs: in
         out_file.write(f"</iidm:{cpnt.flag_name}>\n")
 
 
-class DynawoSerializerIIDM(Serializer):
+class DynawoSerializerIIDM:
     """_summary_
     Serializer for .iidm and .xiidm files.
     """
@@ -99,16 +98,11 @@ class DynawoSerializerIIDM(Serializer):
     xml_version = "1.0"
     encoding = "UTF-8"
 
-    def __init__(self, _object_to_serialize: ObjectToSerialize):
-        super().__init__(_object_to_serialize)
+    def __init__(self, _output_path: str, _obj_stat_model):
+        self.output_path = _output_path
+        self.obj_stat_model = _obj_stat_model
 
     def serialize(self) -> None:
-        with open(
-            self.object_to_serialize.output_path, "w", encoding="utf-8"
-        ) as out_file:
-            out_file.write(
-                f'<?xml version="{self.xml_version}" encoding="{self.encoding}"?>\n'
-            )
-            xml_cpnt_serialize(
-                out_file, self.object_to_serialize.object_to_serialize, 0
-            )
+        with open(self.output_path, "w", encoding="utf-8") as out_file:
+            out_file.write(f'<?xml version="{self.xml_version}" encoding="{self.encoding}"?>\n')
+            xml_cpnt_serialize(out_file, self.obj_stat_model, 0)

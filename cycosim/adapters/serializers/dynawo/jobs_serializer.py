@@ -1,7 +1,5 @@
 import io
 
-from cycosim.domain.ports import Serializer, ObjectToSerialize
-
 from cycosim.adapters.parsers.exceptions import AttributeNotFoundError
 
 PREFIX = "dyn:"
@@ -25,6 +23,7 @@ var_to_jobs_mapping = {
     "stop_time": "stopTime",
     "output_directory": "directory",
     "crv_file_export_mode": "exportMode",
+    "timeline_export_mode": "exportMode",
     "local_dump_init_values": "local",
     "global_dump_init_values": "global",
     "logs_tag": "tag",
@@ -43,7 +42,8 @@ flag_hierarchy = {
     "precompiledModels": [],
     "modelicaModels": [],
     "simulation": [],
-    "outputs": ["curves", "dumpInitValues", "logs"],
+    "outputs": ["curves", "dumpInitValues", "logs", "timeline"],
+    "timeline": [],
     "curves": [],
     "dumpInitValues": [],
     "logs": ["appender"],
@@ -61,6 +61,7 @@ flag_attributes = {
     "modelicaModels": ["modelica_models_use_standard_models"],
     "simulation": ["start_time", "stop_time"],
     "outputs": ["output_directory"],
+    "timeline": ["timeline_export_mode"],
     "curves": ["crv_file", "crv_file_export_mode"],
     "dumpInitValues": ["local_dump_init_values", "global_dump_init_values"],
     "logs": [],
@@ -84,9 +85,7 @@ def create_flag(sim_obj, flag_name: str, nbr_indents: int):
     flag = f"{INDENT * nbr_indents}<{PREFIX}{flag_name}"
     for att in flag_attributes[flag_name]:
         if att not in var_to_jobs_mapping:
-            raise AttributeNotFoundError(
-                f"Serializing Error : {att} not found in the variables-to-JOBS-file mapping."
-            )
+            raise AttributeNotFoundError(f"Serializing Error : {att} not found in the variables-to-JOBS-file mapping.")
         elif getattr(sim_obj, att) is None:
             continue
         else:
@@ -94,9 +93,7 @@ def create_flag(sim_obj, flag_name: str, nbr_indents: int):
     return flag
 
 
-def xml_serializer(
-    out_file: io.TextIOWrapper, sim_obj, nbr_indents: int, curr_flag: str
-):
+def xml_serializer(out_file: io.TextIOWrapper, sim_obj, nbr_indents: int, curr_flag: str):
     flag = create_flag(sim_obj, curr_flag, nbr_indents)
 
     if is_there_non_empty_flag(sim_obj, curr_flag):
@@ -111,7 +108,7 @@ def xml_serializer(
     return
 
 
-class DynawoSerializerJOBS(Serializer):
+class DynawoSerializerJOBS:
     """_summary_
     Serializer for .jobs files.
     """
@@ -119,19 +116,16 @@ class DynawoSerializerJOBS(Serializer):
     xml_version = "1.0"
     encoding = "UTF-8"
 
-    def __init__(self, _object_to_serialize: ObjectToSerialize):
-        super().__init__(_object_to_serialize)
+    def __init__(self, _output_path: str, _param_obj):
+        self.output_path = _output_path
+        self.param_obj = _param_obj
 
     def serialize(self) -> None:
-        with open(
-            self.object_to_serialize.output_path, "w", encoding="utf-8"
-        ) as out_file:
-            out_file.write(
-                f'<?xml version="{self.xml_version}" encoding="{self.encoding}"?>\n'
-            )
+        with open(self.output_path, "w", encoding="utf-8") as out_file:
+            out_file.write(f'<?xml version="{self.xml_version}" encoding="{self.encoding}"?>\n')
             xml_serializer(
                 out_file,
-                self.object_to_serialize.object_to_serialize,
+                self.param_obj,
                 0,
                 flag_hierarchy["root"],
             )

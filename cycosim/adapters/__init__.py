@@ -3,10 +3,8 @@ from .parsers import (  # noqa
     DynawoParserIIDM,
     DynawoParserJOBS,
     DynawoParserPAR,
-    IIDMObject,
-    JOBSObject,
-    DYDObject,
-    PARObject,
+    DynawoParserCRV,
+    HelicsParserXML,
 )
 
 from .serializers import (  # noqa
@@ -14,6 +12,8 @@ from .serializers import (  # noqa
     DynawoSerializerJOBS,
     DynawoSerializerDYD,
     DynawoSerializerPAR,
+    DynawoSerializerCRV,
+    HelicsSerializerJSON,
 )
 
 from .simulations import (  # noqa
@@ -23,4 +23,6 @@ from .simulations import (  # noqa
     DynawoParameterType,
     DynawoReference,
     DynawoSimulationParameters,
+    DynawoCurves,
+    Curve,
 )

@@ -7,6 +7,8 @@ from .ports import (  # noqa
     ObjectToSerialize,
     ExternalElement,
     Simulation,
+    Cosimulation,
+    SimulationConnection,
 )
 
 from .models import (  # noqa
@@ -27,4 +29,5 @@ from .models import (  # noqa
     Connector,
     Connection,
     DynamicModel,
+    Cosimulation,
 )

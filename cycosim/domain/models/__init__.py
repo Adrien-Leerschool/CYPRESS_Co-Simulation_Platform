@@ -19,3 +19,5 @@ from .power_system import (  # noqa
 
 
 from .simulation_model import SimulationModel  # noqa
+
+from .cosimulation import Cosimulation  # noqa

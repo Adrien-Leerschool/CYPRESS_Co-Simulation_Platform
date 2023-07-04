@@ -1,5 +1,7 @@
 from enum import Enum
 
+from typing import List
+
 from dataclasses import dataclass
 
 from cycosim.domain.ports.external_elements import ExternalElement
@@ -9,6 +11,7 @@ class DynawoParameterType(str, Enum):
     DOUBLE = "DOUBLE"
     BOOL = "BOOL"
     INT = "INT"
+    STRING = "STRING"
 
 
 @dataclass
@@ -35,17 +38,17 @@ class DynawoParameterSet(ExternalElement):
     def get_parameter(self, param_name: str):
         """_summary_
         Search in the dict of paramater if there is one with the name 'param_name'.
-        Returns the parameter object if it exists, return False otherwise.
+        Returns the parameter object if it exists, return None otherwise.
         Args:
             param_name (str): The name of the parameter
 
         Returns:
             DynawoParameter : The parameter
-            False : If the parameter does not exist
+            None : If the parameter does not exist
         """
         if param_name in self.parameters:
             return self.parameters[param_name]
-        return False
+        return None
 
     def add_parameter(self, name: str, dynawo_type: str, value: float | bool | int):
         """_summary_
@@ -57,24 +60,22 @@ class DynawoParameterSet(ExternalElement):
             dynawo_type (DynawoParameterType): the dynawo type of the parameter
             value (float | bool | int): the value of the parameter
         """
-        self.parameters[name] = DynawoParameter(
-            name, DynawoParameterType(dynawo_type), value
-        )
+        self.parameters[name] = DynawoParameter(name, DynawoParameterType(dynawo_type), value)
 
     def get_reference(self, ref_name: str):
         """_summary_
         Search in the dict of paramater if there is one with the name 'param_name'.
-        Returns the parameter object if it exists, return False otherwise.
+        Returns the parameter object if it exists, return None otherwise.
         Args:
             param_name (str): The name of the parameter
 
         Returns:
             DynawoParameter : The parameter
-            False : If the parameter does not exist
+            None : If the parameter does not exist
         """
         if ref_name in self.references:
             return self.references[ref_name]
-        return False
+        return None
 
     def add_reference(
         self,
@@ -93,6 +94,33 @@ class DynawoParameterSet(ExternalElement):
             data_source (str): The original data source of the reference
             original_name (str): The original name of the referencee
         """
-        self.references[name] = DynawoReference(
-            name, DynawoParameterType(dynawo_type), data_source, original_name
-        )
+        self.references[name] = DynawoReference(name, DynawoParameterType(dynawo_type), data_source, original_name)
+
+
+class Curve:
+    """_summary_
+    Class representanting a curve to plot at the end of a cosimulation
+    """
+
+    def __init__(self, _model: str, _variable: str):
+        self.model = _model
+        self.variable = _variable
+
+
+class DynawoCurves(ExternalElement):
+    """_summary_
+    Class representing the information contained in a .crv file.
+    This class stores the information about the curves we want to plot at the end of the cosimulation
+    Args:
+        curves (list(Curves)) : List of Curve object.
+        xmlns : namespace of the attributed curve file.
+    """
+
+    curves: List[Curve] = None
+    xmlns: str = "http://www.rte-france.com/dynawo"
+
+    def __init__(self):
+        self.curves = []
+
+    def add_curve(self, model: str, variable: str):
+        self.curves.append(Curve(model, variable))

@@ -1,2 +1,2 @@
-from .input_files import GlobalParser  # noqa
+from .input_files import DynawoGlobalParser, HelicsGlobalParser  # noqa
 from .output_files import GlobalSerializer  # noqa

@@ -1,6 +1,6 @@
 import xmltodict
 
-from cycosim.domain.ports import Parser, ParsedFileObject
+from cycosim.utils import remove_superfluous
 
 from cycosim.domain.models.power_system import (
     Component,
@@ -61,29 +61,9 @@ flag_iidm_mapping = {
     "currentLimit2": Component,
     "temporaryLimit": Component,
     "minMaxReactiveLimits": Component,
+    "currentLimits1": Component,
+    "currentLimits2": Component,
 }
-
-attributes_to_ignore = [
-    "xmlns:iidm",
-    "caseDate",
-    "forecastDistance",
-    "sourceFormat",
-    "topologyKind",
-    "energySource",
-    "connectableBus",
-    "loadType",
-    "g1",
-    "g2",
-    "b2",
-    "p1",
-    "q1",
-    "p2",
-    "q2",
-    "connectableBus1",
-    "voltageLevelId1",
-    "connectableBus2",
-    "voltageLevelId2",
-]
 
 
 def xml_parser(xml_dict: dict, parent_cpnt: Component):
@@ -97,30 +77,29 @@ def xml_parser(xml_dict: dict, parent_cpnt: Component):
         parent_cpnt (Component): The flag in which the current dictionary has been defined.
     """
     for key, val in xml_dict.items():
-        if key.replace("@", "") in attributes_to_ignore:
-            parent_cpnt.info[key.replace("@", "")] = val
-            continue
-
-        elif isinstance(val, dict):
-            curr_cpnt = flag_iidm_mapping[key.replace("iidm:", "")]()
+        if isinstance(val, dict):
+            curr_cpnt = flag_iidm_mapping[key]()
             xml_parser(val, curr_cpnt)
-            curr_cpnt.flag_name = key.replace("iidm:", "")
+            curr_cpnt.flag_name = key
             parent_cpnt.add_sub_component(curr_cpnt)
 
         elif isinstance(val, list):
             for elem in val:
-                curr_cpnt = flag_iidm_mapping[key.replace("iidm:", "")]()
-                curr_cpnt.flag_name = key.replace("iidm:", "")
+                curr_cpnt = flag_iidm_mapping[key]()
+                curr_cpnt.flag_name = key
                 xml_parser(elem, curr_cpnt)
                 parent_cpnt.add_sub_component(curr_cpnt)
 
+        elif not hasattr(parent_cpnt, key):
+            parent_cpnt.info[key] = val
+
         elif isinstance(val, str):
-            setattr(parent_cpnt, var_iidm_mapping[key.replace("@", "")], val)
+            setattr(parent_cpnt, var_iidm_mapping[key], val)
         else:
             print("Error : Unknow type of " + str(val))
 
 
-class DynawoParserIIDM(Parser):
+class DynawoParserIIDM:
     """
     Summary :
         A class used to parse iidm or xiidm files.
@@ -129,16 +108,17 @@ class DynawoParserIIDM(Parser):
         See parent classes.
     """
 
-    def __init__(self, _file_to_parse):
-        super().__init__(_file_to_parse)
-        from .dynawo_files import IIDMObject
+    def __init__(self, _iidm_file):
+        self.iidm_file = _iidm_file
+        self.network = Component()
 
-        self.parsed_file_obj = IIDMObject()
-
-    def parse(self) -> ParsedFileObject:
-        with open(self.file_to_parse, "rb") as xml_data:
+    def parse(self) -> Component:
+        with open(self.iidm_file, "rb") as xml_data:
             xml_dict = xmltodict.parse(xml_data)
-            self.parsed_file_obj.network.flag_name = "network"
-            xml_parser(xml_dict["iidm:network"], self.parsed_file_obj.network)
+            self.network.flag_name = "network"
+            xml_parser(
+                remove_superfluous(xml_dict["iidm:network"], ["iidm:", "@"]),
+                self.network,
+            )
 
-        return self.parsed_file_obj
+        return self.network

@@ -4,4 +4,6 @@ from .dynawo_elements import (  # noqa
     DynawoParameterType,
     DynawoReference,
     DynawoParameterSet,
+    DynawoCurves,
+    Curve,
 )

@@ -1,7 +1,5 @@
 import io
 
-from cycosim.domain.ports import Serializer, ObjectToSerialize
-
 from cycosim.domain.models.power_system import (
     DynamicComponent,
     Connection,
@@ -21,9 +19,7 @@ def xml_serialize(out_file: io.TextIOWrapper, cpnt_list: list):
         if elem.static_references:
             out_file.write(">\n")
             for sr in elem.static_references:
-                out_file.write(
-                    f'    <dyn:staticRef var="{sr.variable}" staticVar="{sr.static_variable}"/>\n'
-                )
+                out_file.write(f'    <dyn:staticRef var="{sr.variable}" staticVar="{sr.static_variable}"/>\n')
             out_file.write("  </dyn:blackBoxModel>\n")
 
         else:
@@ -35,9 +31,7 @@ def xml_serialize(out_file: io.TextIOWrapper, cpnt_list: list):
         if elem.connections:
             out_file.write(">\n")
             for c in elem.connections:
-                out_file.write(
-                    f'    <dyn:connect var1="{c.variable_1}" var2="{c.variable_2}"/>\n'
-                )
+                out_file.write(f'    <dyn:connect var1="{c.variable_1}" var2="{c.variable_2}"/>\n')
             out_file.write("  </dyn:macroConnector>\n")
 
         else:
@@ -56,7 +50,7 @@ def xml_serialize(out_file: io.TextIOWrapper, cpnt_list: list):
             )
 
 
-class DynawoSerializerDYD(Serializer):
+class DynawoSerializerDYD:
     """_summary_
     Serializer for .dyd files.
     """
@@ -64,20 +58,13 @@ class DynawoSerializerDYD(Serializer):
     xml_version = "1.0"
     encoding = "UTF-8"
 
-    def __init__(self, _object_to_serialize: ObjectToSerialize):
-        super().__init__(_object_to_serialize)
+    def __init__(self, _output_path: str, _dyd_network):
+        self.output_path = _output_path
+        self.dyd_network = _dyd_network
 
     def serialize(self) -> None:
-        with open(
-            self.object_to_serialize.output_path, "w", encoding="utf-8"
-        ) as out_file:
-            out_file.write(
-                f'<?xml version="{self.xml_version}" encoding="{self.encoding}"?>\n'
-            )
-            out_file.write(
-                '<dyn:dynamicModelsArchitecture xmlns:dyn="http://www.rte-france.com/dynawo">\n'
-            )
-            xml_serialize(
-                out_file, self.object_to_serialize.object_to_serialize.components
-            )
+        with open(self.output_path, "w", encoding="utf-8") as out_file:
+            out_file.write(f'<?xml version="{self.xml_version}" encoding="{self.encoding}"?>\n')
+            out_file.write('<dyn:dynamicModelsArchitecture xmlns:dyn="http://www.rte-france.com/dynawo">\n')
+            xml_serialize(out_file, self.dyd_network.components)
             out_file.write("</dyn:dynamicModelsArchitecture>")

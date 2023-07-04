@@ -2,11 +2,9 @@ import xmltodict
 
 from cycosim.utils import remove_superfluous
 
-from cycosim.domain.ports.parser import Parser, ParsedFileObject
-
 from ..exceptions import AttributeNotFoundError
 
-from cycosim.adapters.simulations import DynawoSimulation
+from cycosim.adapters.simulations import DynawoSimulation, DynawoSimulationParameters
 
 
 jobs_to_mapping = {
@@ -26,7 +24,10 @@ jobs_to_mapping = {
     "startTime": "start_time",
     "stopTime": "stop_time",
     "directory": "output_directory",
-    "exportMode": {"curves": "crv_file_export_mode"},
+    "exportMode": {
+        "curves": "crv_file_export_mode",
+        "timeline": "timeline_export_mode",
+    },
     "local": {"dumpInitValues": "local_dump_init_values"},
     "global": {"dumpInitValues": "global_dump_init_values"},
     "tag": "logs_tag",
@@ -69,7 +70,7 @@ def parse_xml(xml_dict: dict, sim_obj: DynawoSimulation, flag_name: str):
             print(f"Error : Unmanaged type '{val.type}' during parsing of JOBS file")
 
 
-class DynawoParserJOBS(Parser):
+class DynawoParserJOBS:
     """
     Summary :
         A class used to parse .jobs files.
@@ -77,16 +78,15 @@ class DynawoParserJOBS(Parser):
 
     """
 
-    def __init__(self, _file_to_parse):
-        super().__init__(_file_to_parse)
-        from .dynawo_files import JOBSObject
+    def __init__(self, _jobs_file: str):
+        self.jobs_file = _jobs_file
 
-        self.parsed_file_obj = JOBSObject()
+        self.simulation_parameters = DynawoSimulationParameters()
 
-    def parse(self) -> ParsedFileObject:
-        with open(self.file_to_parse, "rb") as xml_data:
+    def parse(self) -> DynawoSimulationParameters:
+        with open(self.jobs_file, "rb") as xml_data:
             xml_dict = xmltodict.parse(xml_data)
             clean_dict = remove_superfluous(xml_dict, ["@", "dyn:"])
-            parse_xml(clean_dict, self.parsed_file_obj.simulation_parameters, "")
+            parse_xml(clean_dict, self.simulation_parameters, "")
 
-        return self.parsed_file_obj
+        return self.simulation_parameters

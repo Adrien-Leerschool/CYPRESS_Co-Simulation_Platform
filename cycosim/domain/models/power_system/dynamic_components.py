@@ -42,6 +42,11 @@ class DynamicComponent:
             else:
                 print(f"Error : Unknown attribute '{key}' for class DynamicComponent.")
 
+    def get_parameter(self, param_name: str):
+        if self.id == param_name:
+            return self.id
+        return None
+
 
 class StaticReference:
     def __init__(self):
@@ -57,6 +62,16 @@ class StaticReference:
                 self.static_variable = val
             else:
                 print(f"Error : Unknown attribute '{key}' for class StaticReference")
+
+    def get_parameter(self, param_name: str):
+        if self.variable == param_name:
+            return self.variable
+
+        elif self.static_variable == param_name:
+            return self.static_variable
+
+        else:
+            return None
 
 
 class Connector:
@@ -87,6 +102,11 @@ class Connector:
 
             else:
                 print(f"Error : Unknown attribute '{key}' for class Connector.")
+
+    def get_parameter(self, param_name: str):
+        if self.id == param_name:
+            return self.id
+        return None
 
 
 class Connection:
@@ -121,8 +141,22 @@ class Connection:
             else:
                 print(f"Error : Unknown attribute '{key}' for class Connection.")
 
+    def get_parameter(self, param_name):
+        if self.variable_1 == param_name:
+            return self.variable_1
+
+        elif self.variable_2 == param_name:
+            return self.variable_2
+
+        else:
+            return None
+
 
 class DynamicModel:
-    components: List[
-        Union[DynamicComponent, StaticReference, Connection, Connector]
-    ] = []
+    components: List[Union[DynamicComponent, StaticReference, Connection, Connector]] = []
+
+    def get_parameter(self, param_name: str):
+        for dyn_cpnt in self.components:
+            if dyn_cpnt.get_parameter(param_name) is not None:
+                return dyn_cpnt.get_parameter(param_name)
+        return None

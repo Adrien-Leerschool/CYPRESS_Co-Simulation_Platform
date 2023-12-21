@@ -1,4 +1,4 @@
-CYPRESS_DIR="/Users/adrienleerschool/Documents/Cypress/VM/CYPRESS_Co-Simulation_Platform"
+CYPRESS_DIR="/home/adrien/Documents/CYPRESS/CYPRESS_Co-Simulation_Platform"
 
 apt clean
 apt-get update && apt-get install -y \
@@ -51,7 +51,9 @@ apt-get update && apt-get install -y \
     nano \
     pkg-config \
     python3-venv \
-    bash-completion
+    bash-completion \
+    bison \
+    flex
 
 
 cd "$CYPRESS_DIR/Simulators/HELICS-CYPRESS"

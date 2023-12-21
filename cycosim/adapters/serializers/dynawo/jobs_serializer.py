@@ -29,6 +29,9 @@ var_to_jobs_mapping = {
     "logs_tag": "tag",
     "logs_output_file": "file",
     "logs_filter_level": "lvlFilter",
+    "timeline_filter": "filter",
+    "modelica_directory_path": "path",
+    "modelica_directory_recursive": "recursive",
 }
 
 flag_hierarchy = {
@@ -40,14 +43,15 @@ flag_hierarchy = {
     "network": [],
     "dynModels": [],
     "precompiledModels": [],
-    "modelicaModels": [],
+    "modelicaModels": ["directory"],
     "simulation": [],
-    "outputs": ["curves", "dumpInitValues", "logs", "timeline"],
+    "outputs": ["timeline", "curves", "dumpInitValues", "logs"],
     "timeline": [],
     "curves": [],
     "dumpInitValues": [],
     "logs": ["appender"],
     "appender": [],
+    "directory": [],
 }
 
 flag_attributes = {
@@ -61,11 +65,12 @@ flag_attributes = {
     "modelicaModels": ["modelica_models_use_standard_models"],
     "simulation": ["start_time", "stop_time"],
     "outputs": ["output_directory"],
-    "timeline": ["timeline_export_mode"],
+    "timeline": ["timeline_export_mode", "timeline_filter"],
     "curves": ["crv_file", "crv_file_export_mode"],
     "dumpInitValues": ["local_dump_init_values", "global_dump_init_values"],
     "logs": [],
     "appender": ["logs_tag", "logs_output_file", "logs_filter_level"],
+    "directory": ["modelica_directory_path", "modelica_directory_recursive"],
 }
 
 

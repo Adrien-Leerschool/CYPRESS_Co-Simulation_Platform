@@ -45,11 +45,10 @@ def configure_dynawo_simulation(args) -> Simulation:
         )
     simulation.simulation_parameters = parser.parse()
 
-    # Retrieve the three other mandatory files (IIDM, PAR, DYD)
-    file_types = [FileType.IIDM, FileType.PAR, FileType.DYD]
+    # Retrieve the two other mandatory files (PAR, DYD)
+    file_types = [FileType.PAR, FileType.DYD]
     jobs_param = [
-        simulation.simulation_parameters.iidm_file,
-        simulation.simulation_parameters.network_parameter_file,
+        simulation.simulation_parameters.solver_parameter_file,
         simulation.simulation_parameters.dyd_file,
     ]
 
@@ -60,16 +59,17 @@ def configure_dynawo_simulation(args) -> Simulation:
         if not os.path.exists(os.path.join(args.dynawo_data, j_p)):
             raise FileNotFoundError(f"The specified {f_t} file does not exist in folder '{args.dynawo_data}'.")
 
-        if f_t == FileType.IIDM:
-            simulation.static_network = DynawoGlobalParser(os.path.join(args.dynawo_data, j_p)).parse()
-        elif f_t == FileType.PAR:
+        if f_t == FileType.PAR:
             simulation.parameter_sets = DynawoGlobalParser(os.path.join(args.dynawo_data, j_p)).parse()
         elif f_t == FileType.DYD:
             simulation.dynamic_network = DynawoGlobalParser(os.path.join(args.dynawo_data, j_p)).parse()
 
     # Check for non-mandatory files and parse them
-    file_types = [FileType.CRV]
-    jobs_param = [simulation.simulation_parameters.crv_file]
+    file_types = [FileType.IIDM, FileType.CRV]
+    jobs_param = [
+        simulation.simulation_parameters.iidm_file,
+        simulation.simulation_parameters.crv_file,
+    ]
 
     for cnt, f_t, j_p in zip(range(len(file_types)), file_types, jobs_param):
         if j_p is None:
@@ -78,7 +78,10 @@ def configure_dynawo_simulation(args) -> Simulation:
         if not os.path.exists(os.path.join(args.dynawo_data, j_p)):
             raise FileNotFoundError(f"The specified {f_t} file does not exist in folder '{args.dynawo_data}'.")
 
-        if f_t == FileType.CRV:
+        if f_t == FileType.IIDM:
+            simulation.static_network = DynawoGlobalParser(os.path.join(args.dynawo_data, j_p)).parse()
+
+        elif f_t == FileType.CRV:
             simulation.curves = DynawoGlobalParser(os.path.join(args.dynawo_data, j_p)).parse()
 
     # Create the folder where we gonna store the serialized files used for the dynawo simulation

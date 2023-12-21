@@ -33,6 +33,9 @@ jobs_to_mapping = {
     "tag": "logs_tag",
     "file": {"appender": "logs_output_file"},
     "lvlFilter": "logs_filter_level",
+    "filter": "timeline_filter",
+    "path": "modelica_directory_path",
+    "recursive": "modelica_directory_recursive",
 }
 
 
@@ -62,7 +65,7 @@ def parse_xml(xml_dict: dict, sim_obj: DynawoSimulation, flag_name: str):
                     var_name = jobs_to_mapping[key]
             except KeyError:
                 raise AttributeNotFoundError(
-                    f"Parsing Error : Unknown flag attribute '{key}' with flag name '{flag_name}' from JOBS file."
+                    f"JOBS Parsing Error : Unknown flag attribute '{key}' with flag name '{flag_name}' from JOBS file."
                 )
             set_variable(sim_obj, var_name, val)
 

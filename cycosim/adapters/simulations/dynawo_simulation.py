@@ -36,6 +36,8 @@ class DynawoSimulationParameters:
     network_parameter_file = None
     precompiled_models_use_standard_models = None
     modelica_models_use_standard_models = None
+    modelica_directory_path = None
+    modelica_directory_recursive = None
 
     # Logging parameters
     logs_tag = None
@@ -46,6 +48,7 @@ class DynawoSimulationParameters:
     output_directory = None
     crv_file_export_mode = None
     timeline_export_mode = None
+    timeline_filter = None
 
     # Others
     local_dump_init_values = None
@@ -175,18 +178,24 @@ class DynawoSimulation(Simulation):
         self.add_cosimulation_connections(arguments["cosimulation"])
         self.add_cosimulation_set(arguments["cosimulation"])
 
+        # Mandatory files
         DynawoSerializerJOBS(
             arguments["output_path"] + self.simulation_parameters.name + ".jobs", self.simulation_parameters
-        ).serialize()
-        DynawoSerializerIIDM(
-            arguments["output_path"] + self.simulation_parameters.iidm_file, self.static_network
         ).serialize()
         DynawoSerializerDYD(
             arguments["output_path"] + self.simulation_parameters.dyd_file, self.dynamic_network
         ).serialize()
         DynawoSerializerPAR(
-            arguments["output_path"] + self.simulation_parameters.network_parameter_file, self.parameter_sets
+            arguments["output_path"] + self.simulation_parameters.solver_parameter_file, self.parameter_sets
         ).serialize()
 
+        # Optional files
+        if self.simulation_parameters.iidm_file is not None:
+            DynawoSerializerIIDM(
+                arguments["output_path"] + self.simulation_parameters.iidm_file, self.static_network
+            ).serialize()
+
         if self.curves is not None:
-            DynawoSerializerCRV(arguments["output_path"] + self.simulation_parameters.crv_file, self.curves).serialize()
+            DynawoSerializerCRV(
+                arguments["output_path"] + self.simulation_parameters.crv_file, self.curves
+            ).serialize()
